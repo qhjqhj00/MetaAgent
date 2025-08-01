@@ -129,7 +129,6 @@ You will get the following response:
       "snippet": "Search the world's information, including webpages, images, videos and more. Google has many special features to help you find exactly what you're looking ...",
       "context": "..."
     },
-    ...
   ]
 }
 ```
@@ -191,7 +190,6 @@ You will get the following response:
       "url": "https://aba.org.uk/assets/catalogues/215_DPS.pdf"
     }
   ],
-  ...
 }
 ```
 In addition to the `/search` route, the `tools/es/cache_search_app.py` service also provides an `/insert` route. This allows you to add new webpages to the Elasticsearch index by sending a POST request with the webpage data. 
@@ -245,7 +243,291 @@ You can use other OpenAI-style models by replacing the `--reasoning_model` and `
 Besides, if advanced reasoning model is specified, MetaAgent will use the advanced reasoning model as the central reasoning model.
 > **Tip:** Check all ports in these services to enable communication between the services.
 
-In the data folder, we provide the GAIA subset and WebWalker dataset we use in this project. Another used dataset is BrowseCamp, of which the author require not release decoded version in public place, there you may download and decode by yourself.
+In the data folder, we provide the GAIA subset and the WebWalker dataset used in this project. The [BrowseCamp](https://arxiv.org/abs/2504.12516) dataset, also utilized here, is not publicly released in decoded form by the original authors; you will need to download and decode it yourself following their instructions.
+
+
+## :chart_with_upwards_trend: Evaluation
+
+We evaluate MetaAgent on the GAIA, WebWalkerQA, and BrowseCamp datasets. The results are shown in the following table:
+
+<table>
+  <thead>
+    <tr>
+      <th rowspan="2"><strong>Method</strong></th>
+      <th colspan="4"><strong>General AI Assistant</strong></th>
+      <th colspan="4"><strong>WebWalkerQA</strong></th>
+      <th colspan="3"><strong>BrowseCamp</strong></th>
+    </tr>
+    <tr>
+      <th>Level 1</th>
+      <th>Level 2</th>
+      <th>Level 3</th>
+      <th>Avg.</th>
+      <th>Easy</th>
+      <th>Medium</th>
+      <th>Hard</th>
+      <th>Avg.</th>
+      <th>Art</th>
+      <th>History</th>
+      <th>Avg.</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="12"><em><strong>Direct Reasoning (w/o Retrieval)</strong></em></td>
+    </tr>
+    <tr>
+      <td>Qwen2.5-32B</td>
+      <td>20.5</td>
+      <td>9.6</td>
+      <td>8.3</td>
+      <td>13.6</td>
+      <td>3.8</td>
+      <td>2.5</td>
+      <td>3.3</td>
+      <td>3.1</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>QwQ-32B</td>
+      <td>30.8</td>
+      <td>15.4</td>
+      <td><strong>25.0</strong></td>
+      <td>22.3</td>
+      <td>7.5</td>
+      <td>2.1</td>
+      <td>4.6</td>
+      <td>4.3</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>GPT-4o</td>
+      <td>23.1</td>
+      <td>15.4</td>
+      <td>8.3</td>
+      <td>17.5</td>
+      <td>6.7</td>
+      <td>6.0</td>
+      <td>4.2</td>
+      <td>5.5</td>
+      <td>0.8</td>
+      <td>0.8</td>
+      <td>0.8</td>
+    </tr>
+    <tr>
+      <td>DeepSeek-R1-671B</td>
+      <td>43.6</td>
+      <td>26.9</td>
+      <td>8.3</td>
+      <td>31.1</td>
+      <td>5.0</td>
+      <td>11.8</td>
+      <td>11.3</td>
+      <td>10.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td colspan="12"><em><strong>Direct Reasoning (w/ Retrieval)</strong></em></td>
+    </tr>
+    <tr>
+      <td>RAG (Qwen2.5-32B)</td>
+      <td>12.8</td>
+      <td>11.8</td>
+      <td>8.3</td>
+      <td>11.8</td>
+      <td>23.1</td>
+      <td>14.3</td>
+      <td>11.3</td>
+      <td>15.3</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>RAG (QwQ-32B)</td>
+      <td>33.3</td>
+      <td>36.5</td>
+      <td>8.3</td>
+      <td>32.0</td>
+      <td>36.9</td>
+      <td>26.1</td>
+      <td>33.5</td>
+      <td>31.2</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td colspan="12"><em><strong>Workflow-Based Agent</strong></em></td>
+    </tr>
+    <tr>
+      <td>Query Planning (Qwen2.5-32B)</td>
+      <td>30.8</td>
+      <td>17.3</td>
+      <td>0.0</td>
+      <td>20.4</td>
+      <td>29.4</td>
+      <td>36.4</td>
+      <td>25.0</td>
+      <td>30.7</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>Query Planning (QwQ-32B)</td>
+      <td>48.7</td>
+      <td>25.0</td>
+      <td>8.3</td>
+      <td>32.0</td>
+      <td>28.8</td>
+      <td>35.7</td>
+      <td>30.8</td>
+      <td>32.5</td>
+      <td>0.0</td>
+      <td>0.8</td>
+      <td>0.4</td>
+    </tr>
+    <tr>
+      <td>Iterative RAG (Qwen2.5-32B)</td>
+      <td>35.9</td>
+      <td>19.2</td>
+      <td>8.3</td>
+      <td>24.3</td>
+      <td>30.6</td>
+      <td>35.7</td>
+      <td>25.4</td>
+      <td>30.9</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>Iterative RAG (QwQ-32B)</td>
+      <td>51.3</td>
+      <td>28.8</td>
+      <td>8.3</td>
+      <td>35.0</td>
+      <td>29.4</td>
+      <td>32.9</td>
+      <td>31.3</td>
+      <td>31.5</td>
+      <td>0.8</td>
+      <td>0.0</td>
+      <td>0.4</td>
+    </tr>
+    <tr>
+      <td>ReAct (Qwen2.5-32B)</td>
+      <td>46.1</td>
+      <td><u>44.2</u></td>
+      <td>8.3</td>
+      <td>40.7</td>
+      <td>44.3</td>
+      <td><u>46.7</u></td>
+      <td>29.2</td>
+      <td>38.4</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>ReAct (QwQ-32B)</td>
+      <td>48.7</td>
+      <td>34.6</td>
+      <td><u>16.7</u></td>
+      <td>37.8</td>
+      <td>35.6</td>
+      <td>29.1</td>
+      <td>13.2</td>
+      <td>24.1</td>
+      <td>0.8</td>
+      <td>0.8</td>
+      <td>0.8</td>
+    </tr>
+    <tr>
+      <td>ReAct (GPT-4o)</td>
+      <td>51.2</td>
+      <td>34.6</td>
+      <td>8.3</td>
+      <td>34.6</td>
+      <td>34.6</td>
+      <td>42.0</td>
+      <td>23.9</td>
+      <td>33.8</td>
+      <td><u>2.4</u></td>
+      <td>1.6</td>
+      <td>1.9</td>
+    </tr>
+    <tr>
+      <td>Search-o1-32B</td>
+      <td>53.8</td>
+      <td><u>44.2</u></td>
+      <td><u>16.7</u></td>
+      <td>39.8</td>
+      <td>43.1</td>
+      <td>35.0</td>
+      <td>27.1</td>
+      <td>34.1</td>
+      <td>1.6</td>
+      <td>2.4</td>
+      <td>1.9</td>
+    </tr>
+    <tr>
+      <td colspan="12"><em><strong>End-to-end optimized Agent</strong></em></td>
+    </tr>
+    <tr>
+      <td>WebThinker-32B-Base</td>
+      <td>53.8</td>
+      <td><u>44.2</u></td>
+      <td><u>16.7</u></td>
+      <td>44.7</td>
+      <td>47.5</td>
+      <td>41.1</td>
+      <td>39.2</td>
+      <td>41.9</td>
+      <td><u>2.4</u></td>
+      <td>2.4</td>
+      <td>2.3</td>
+    </tr>
+    <tr>
+      <td>WebThinker-32B-RL</td>
+      <td>56.4</td>
+      <td><strong>50.0</strong></td>
+      <td><u>16.7</u></td>
+      <td><strong>48.5</strong></td>
+      <td><strong>58.8</strong></td>
+      <td>44.6</td>
+      <td><u>40.4</u></td>
+      <td><u>46.5</u></td>
+      <td><u>2.4</u></td>
+      <td><u>3.1</u></td>
+      <td><u>2.7</u></td>
+    </tr>
+    <tr>
+      <td colspan="12"><em><strong>Our method</strong></em></td>
+    </tr>
+    <tr>
+      <td><strong>MetaAgent</strong> (QwQ-32B)</td>
+      <td><strong>61.5</strong></td>
+      <td>42.3</td>
+      <td><strong>25.0</strong></td>
+      <td><u>47.6</u></td>
+      <td><u>55.0</u></td>
+      <td><strong>49.6</strong></td>
+      <td><strong>47.9</strong></td>
+      <td><strong>52.1</strong></td>
+      <td><strong>7.9</strong></td>
+      <td><strong>6.4</strong></td>
+      <td><strong>7.1</strong></td>
+    </tr>
+  </tbody>
+</table>
 
 
 
