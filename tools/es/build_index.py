@@ -7,6 +7,10 @@ import tiktoken
 def get_tokenizer(model: str = "gpt-3.5-turbo"):
     return tiktoken.encoding_for_model(model)
 
+def load_jsonl(file_path):
+    with open(file_path, "r") as f:
+        return [json.loads(line) for line in f]
+
 tokenizer = get_tokenizer()
 es = Elasticsearch("http://localhost:9311")
 
