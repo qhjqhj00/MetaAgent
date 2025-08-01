@@ -1,0 +1,10 @@
+openai
+chardet
+bs4
+pdfplumber
+aiohttp
+langgraph
+langchain_core
+tiktoken
+mysql
+elasticsearch
